@@ -1,5 +1,8 @@
 #include "Matrix.hpp"
+#include <sstream>
+#include <string>
 
+using namespace std;
 namespace zich
 {
 
@@ -11,7 +14,7 @@ namespace zich
         }
         if (row * column != vec.size())
         {
-            throw std::runtime_error("The size must match the size of the vector inserter");
+            throw std::runtime_error("The size must match the size of the vector inseted");
         }
         if (vec.empty())
         {
@@ -140,13 +143,15 @@ namespace zich
         }
         return sum;
     }
+
     Matrix Matrix::operator*(const Matrix &matrix)
     {
         if (this->column != matrix.row)
         {
-            throw std::runtime_error("The sizes of the matrices do not match");
+            throw std::runtime_error("size problem");
         }
         std::vector<double> n;
+        n.resize((unsigned int)(this->row * matrix.column));
         Matrix newMatrix(n, row, matrix.column);
         for (int i = 0; i < newMatrix.row; i++)
         {
@@ -230,14 +235,26 @@ namespace zich
 
     std::ostream &operator<<(std::ostream &COUT, const Matrix &matrix)
     {
+        int minus_1 = 1;
         for (int i = 0; i < matrix.row; i++)
         {
             COUT << '[';
             for (int j = 0; j < matrix.column; j++)
             {
-                COUT << matrix.vec[(unsigned int)(matrix.column * i + j)] << " ";
+                COUT << matrix.vec[(unsigned int)(matrix.column * i + j)];
+                if (j < matrix.column - minus_1)
+                {
+                    COUT << ' ';
+                }
             }
-            COUT << "]" << std::endl;
+            if (i < matrix.row - minus_1)
+            {
+                COUT << "]" << std::endl;
+            }
+            else
+            {
+                COUT << "]";
+            }
         }
         return COUT;
     }
@@ -277,13 +294,100 @@ namespace zich
         return matrix1;
     }
 
-    Matrix operator+( Matrix &matrix)
+    Matrix operator+(Matrix &matrix)
     {
         return matrix;
     }
 
     std::istream &operator>>(std::istream &is, Matrix &self)
     {
+        string element;
+        string matend;
+        int columns = -2;
+        int lines = 0;
+        vector<double> matrix;
+        while (!is.eof())
+        {
+            is >> element;
+            matend += " " + element;
+        }
+
+        lines = (int)count(matend.begin(), matend.end(), '[');
+
+        for (unsigned long i = 0; i < matend.size(); i++)
+        {
+            if (matend[i] == ' ')
+            {
+                columns++;
+            }
+            if (matend[i] == ']')
+            {
+                break;
+            }
+        }
+
+        // matrix_input_exeption(&matend,lines,columns);
+
+        int sum_spaces = lines * (columns + 2);
+        int sum_psiks = lines - 1;
+        if (lines != (int)count(matend.begin(), matend.end(), ']'))
+        {
+            throw std::out_of_range{"not in format"};
+        }
+        int sum_spaces_between = 0;
+        for (unsigned long i = 0; i < matend.size(); i++)
+        {
+            if (matend[i] == ' ')
+            {
+                sum_spaces--;
+                sum_spaces_between++;
+            }
+            if (matend[i] == ',')
+            {
+                sum_psiks--;
+            }
+            if (i != matend.size() - 1 && matend[i] == ']' && matend[i + 1] != ',')
+            {
+                throw std::out_of_range{"not in format"};
+            }
+            if (matend[i] == ']')
+            {
+                if (sum_spaces_between != (columns + 2))
+                {
+                    throw std::out_of_range{"not in format"};
+                }
+                sum_spaces_between = 0;
+            }
+        }
+        if (sum_spaces != 0 || sum_psiks != 0)
+        {
+            throw std::out_of_range{"not in format"};
+        }
+
+        replace(matend.begin(), matend.end(), '[', ' ');
+        replace(matend.begin(), matend.end(), ']', ' ');
+        replace(matend.begin(), matend.end(), ',', ' ');
+
+        string num_in_matrix;
+        stringstream stream_matrix(matend);
+        while (getline(stream_matrix, num_in_matrix, ' '))
+        {
+            if (num_in_matrix != "\0")
+            {
+                try
+                {
+                    double num_double = stod(num_in_matrix);
+                    matrix.push_back(num_double);
+                }
+                catch (exception &ex)
+                {
+                    throw std::out_of_range{"not number"};
+                }
+            }
+        }
+        self.column = columns;
+        self.row = lines;
+        self.vec = matrix;
         return is;
     }
 
