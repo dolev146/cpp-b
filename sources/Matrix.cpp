@@ -204,21 +204,13 @@ namespace zich
     {
         return (*this).sum_this_matrix() < matrix.sum_this_matrix();
     }
-    bool Matrix::operator!=(const Matrix &matrix)
+    bool Matrix::operator!=(const Matrix &otherMat)
     {
-        if (this->row != matrix.row || this->column != matrix.column)
+        if (this->row != otherMat.row || this->column != otherMat.column)
         {
-            return false;
+            throw runtime_error("The matrix must been in the same size ! ");
         }
-        unsigned int size = (unsigned int)(row * column);
-        for (unsigned int i = 0; i < size; i++)
-        {
-            if (this->vec[i] != matrix.vec[i])
-            {
-                return true;
-            }
-        }
-        return false;
+        return !(((*this) == otherMat));
     }
     bool Matrix::operator==(const Matrix &matrix)
     {
@@ -286,11 +278,29 @@ namespace zich
 
     bool operator==(const Matrix &matrix1, const Matrix &matrix2)
     {
+        if (matrix1.row != matrix2.row || matrix1.column != matrix2.column)
+        {
+            return false;
+        }
+
+        unsigned int size = (unsigned int)(matrix1.row * matrix1.column);
+        for (unsigned int i = 0; i < size; i++)
+        {
+            if (matrix1.vec[i] != matrix2.vec[i])
+            {
+                return false;
+            }
+        }
+
         return true;
     };
 
     Matrix operator*(const Matrix &matrix1, const Matrix &matrix2)
     {
+        if (matrix1.row != matrix2.row || matrix1.column != matrix2.column)
+        {
+            throw std::runtime_error("diffrent size");
+        }
         return matrix1;
     }
 

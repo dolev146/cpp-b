@@ -22,13 +22,14 @@ namespace zich
         Matrix operator++(const int);                   // check
         Matrix &operator+=(const Matrix &other_matrix); // check
 
-        friend std::istream &operator>>(std::istream &is, Matrix &this_matrix);    // check
+        friend std::istream &operator>>(std::istream &is, Matrix &self); // check
+
         friend std::ostream &operator<<(std::ostream &COUT, const Matrix &matrix); // check
         friend Matrix operator*(const double, Matrix &matrix);                     // check
         friend Matrix operator-(Matrix &matrix);                                   // check
-        friend Matrix operator+(Matrix &matrix);        // check
-        friend bool operator==(const Matrix &matrix1,const Matrix  &matrix2);              // check
-        friend Matrix operator*(const Matrix &matrix1, const Matrix &matrix2); // check
+        friend Matrix operator+(Matrix &matrix);                                   // check
+        friend bool operator==(const Matrix &matrix1, const Matrix &matrix2);      // check
+        friend Matrix operator*(const Matrix &matrix1, const Matrix &matrix2);     // check
 
         Matrix operator-(const Matrix &other_matrix); // check
         Matrix operator-(const double);
