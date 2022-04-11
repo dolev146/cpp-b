@@ -1,415 +1,524 @@
 #include "Matrix.hpp"
-#include <sstream>
-#include <string>
+/**
+ * Demo file for the exercise on numbers with units
+ *
+ * @author Dolev Dublon
+ * @since 2022-04
+ *
+ * @copyright all reserved to dolev dublon .inc
+ * @warning read it in your own responcibility :)
+ *
+ *
+ */
 
 using namespace std;
+
 namespace zich
 {
 
-    Matrix::Matrix(const std::vector<double> &vec, const int row, const int column)
+    Matrix Matrix::operator+(Matrix const &matrix_param)
     {
-        if (row <= 0 || column <= 0)
+        /*
+         check for rows and columns first!
+        */
+        if (this->rows != matrix_param.rows || this->columns != matrix_param.columns)
         {
-            throw std::runtime_error("The size must be positive");
+            throw runtime_error(" diffrent size ");
         }
-        if (row * column != vec.size())
-        {
-            throw std::runtime_error("The size must match the size of the vector inseted");
-        }
-        if (vec.empty())
-        {
-            throw std::runtime_error("empty");
-        }
+        size_t new_size_of_vector = (rows * columns);
+        vector<double> vector_to_insert;
+        vector_to_insert.resize(new_size_of_vector);
 
-        this->vec = vec;
-        this->row = row;
-        this->column = column;
-    }
-    Matrix Matrix::operator+(const Matrix &matrix)
-    {
-        if (this->row != matrix.row || this->column != matrix.column)
+        /*
+        loop over and insert the values and return a new matrix
+        */
+        for (size_t i = 0; i < new_size_of_vector; i++)
         {
-            throw std::runtime_error("diffrent size");
+            vector_to_insert[i] = this->vec_of_mat[i] + matrix_param.vec_of_mat[i];
         }
+        return Matrix(vector_to_insert, rows, columns);
+    }
 
-        unsigned int length = (unsigned int)(row * column);
-        std::vector<double> temp_vector;
-        temp_vector.resize(length);
-        for (unsigned int i = 0; i < length; i++)
-        {
-            temp_vector[i] = this->vec[i] + matrix.vec[i];
-        }
-        return Matrix(temp_vector, row, this->column);
-    }
-    Matrix &Matrix::operator++()
+    Matrix &Matrix::operator+=(Matrix const &matrix_param)
     {
-        for (int i = 0; i < row; i++)
-        {
-            for (int j = 0; j < column; j++)
-            {
-                vec[(unsigned int)(i * column + j)] += 1;
-            }
-        }
-        return *this;
-    }
-    Matrix Matrix::operator++(const int number)
-    {
-        Matrix duplicated = *this;
-        for (int i = 0; i < row; i++)
-        {
-            for (int j = 0; j < column; j++)
-            {
-                vec[(unsigned int)(i * column + j)] += 1;
-            }
-        }
-        return duplicated;
-    }
-    Matrix &Matrix::operator+=(const Matrix &matrix)
-    {
-        if (this->row != matrix.row || this->column != matrix.column)
-        {
-            throw std::runtime_error("The matrices are diffrent");
-        }
-        for (int i = 0; i < row; i++)
-        {
-            for (int j = 0; j < column; j++)
-            {
-                vec[(unsigned int)(i * column + j)] += matrix.vec[(unsigned int)(i * column + j)];
-            }
-        }
+        /*
+        now we will compare the the size first to see if operation is OK
+        */
+        compare_size(matrix_param);
+        /*
+        now we will add the matrix and insert it to this
+        */
+        *this = (*this) + matrix_param;
         return *this;
     }
 
-    Matrix Matrix::operator-(const Matrix &matrix)
+    Matrix Matrix::operator-(Matrix const &matrix_param)
     {
-        if (this->row != matrix.row || this->column != matrix.column)
+        /*
+        now we will compare the the size first to see if operation is OK
+        */
+        compare_size(matrix_param);
+        /*
+        now we will create a new matrix and will store the new values in it and return it
+        */
+        size_t new_size_of_vector = (this->rows * this->columns);
+        vector<double> vec_to_store_info;
+        vec_to_store_info.resize(new_size_of_vector);
+        for (size_t i = 0; i < new_size_of_vector; i++)
         {
-            throw std::runtime_error("diffrent size");
+            vec_to_store_info[i] = this->vec_of_mat[i] - matrix_param.vec_of_mat[i];
         }
-        unsigned int length = (unsigned int)(row * column);
-        std::vector<double> temp_vector;
-        temp_vector.resize(length);
-        for (unsigned int i = 0; i < length; i++)
-        {
-            temp_vector[i] = this->vec[i] - matrix.vec[i];
-        }
-        return Matrix(temp_vector, row, column);
+        return Matrix(vec_to_store_info, this->rows, this->columns);
     }
+
+    Matrix operator*(const double matrix_param1, Matrix &matrix_param)
+    {
+        /*
+            we are useing here a function that we already built
+            Matrix Matrix::operator*(Matrix const &matrix_param)
+            and returning the value
+        */
+        return matrix_param * matrix_param1;
+    }
+
     Matrix &Matrix::operator--()
     {
-        for (int i = 0; i < row; i++)
+        /*
+        loop over the vector values and downgrade everything by 1
+        then return this matrix :)
+        */
+        for (size_t i = 0; i < this->rows; i++)
         {
-            for (int j = 0; j < column; j++)
+            for (size_t j = 0; j < this->columns; j++)
             {
-                vec[(unsigned int)(i * column + j)] -= 1;
-            }
-        }
-        return *this;
-    }
-    Matrix Matrix::operator--(const int number)
-    {
-        Matrix duplicated = *this;
-        for (int i = 0; i < row; i++)
-        {
-            for (int j = 0; j < column; j++)
-            {
-                vec[(unsigned int)(i * column + j)] -= 1;
-            }
-        }
-        return duplicated;
-    }
-    Matrix &Matrix::operator-=(const Matrix &matrix)
-    {
-        if (this->row != matrix.row || this->column != matrix.column)
-        {
-            throw std::runtime_error("diffrent size");
-        }
-        for (int i = 0; i < row; i++)
-        {
-            for (int j = 0; j < column; j++)
-            {
-                vec[(unsigned int)(i * column + j)] -= matrix.vec[(unsigned int)(i * column + j)];
+                vec_of_mat[(i * this->columns + j)] -= 1;
             }
         }
         return *this;
     }
 
-    double Matrix::multiply_matrices(const int row_param, const Matrix &matrix, const int column_param)
+    Matrix &Matrix::operator-=(Matrix const &matrix_param)
     {
+        /*
+            now we will compare the the size first to see if operation is OK
+        */
+        compare_size(matrix_param);
+        /*
+        now we will subtract the matrix and insert it to this
+        */
+        *this = (*this) - matrix_param;
+        return *this;
+    }
+
+    double Matrix::matrix_multipy_helper(const size_t row_param, Matrix const &matrix_param, const size_t columns_param)
+    {
+        /*
+            lets remember how multiply works , we need to sum up the values of row cross column and
+            insert it to the correct slot
+            here we sum the values according to the rules of matrix multiplication :)
+            and returning the values
+        */
         double sum = 0;
-        for (int i = 0; i < this->column; i++)
+        for (size_t i = 0; i < this->columns; i++)
         {
-            sum += this->vec[(unsigned int)(this->column * row_param + i)] * matrix.vec[(unsigned int)(matrix.column * i + column_param)];
+            sum += this->vec_of_mat[(this->columns * row_param + i)] * matrix_param.vec_of_mat[(matrix_param.columns * i + columns_param)];
         }
         return sum;
     }
 
-    Matrix Matrix::operator*(const Matrix &matrix_param)
+    Matrix Matrix::operator*(Matrix const &matrix_param)
     {
-        if (this->column != matrix_param.row)
+        /*
+        we only need to check for column size equals to rows of second mat
+        due to the rulse of the multiplication
+        */
+        if (this->columns != matrix_param.rows)
         {
-            throw runtime_error("");
+            throw runtime_error("diffrent size");
         }
-        std::vector<double> n;
-        n.resize((unsigned int)(row * matrix_param.column));
-        Matrix newMatrix(n, row, matrix_param.column);
-        for (int i = 0; i < newMatrix.row; i++)
+
+        /*
+            now we will just create a new matrix ,
+            make the changes insert the new values and return the matrix :) simple
+        */
+        vector<double> n;
+        n.resize(this->rows * matrix_param.columns);
+        Matrix matrix_to_return(n, this->rows, matrix_param.columns);
+        for (size_t i = 0; i < matrix_to_return.rows; i++)
         {
-            for (int j = 0; j < newMatrix.column; j++)
+            for (size_t j = 0; j < matrix_to_return.columns; j++)
             {
-                newMatrix.vec[(unsigned int)(i * newMatrix.column + j)] = multiply_matrices(i, matrix_param, j);
+                matrix_to_return.vec_of_mat[(i * matrix_to_return.columns + j)] = matrix_multipy_helper(i, matrix_param, j);
             }
         }
-        return newMatrix;
+        return matrix_to_return;
     }
 
-    Matrix Matrix::operator*(const double number)
+    Matrix Matrix::operator*(const double number_param)
     {
-        Matrix newMatrix = *this;
-        for (unsigned int i = 0; i < row; i++)
+        /*
+        here we simply need to for loop and multiply every value
+        inside by the number param
+        */
+        Matrix matrix_to_return = *this;
+        for (size_t i = 0; i < this->rows; i++)
         {
-            for (unsigned int j = 0; j < column; j++)
+            for (size_t j = 0; j < this->columns; j++)
             {
-                newMatrix.vec[(unsigned int)(column)*i + j] *= number;
+                matrix_to_return.vec_of_mat[(this->columns) * i + j] *= number_param;
             }
         }
-        return newMatrix;
+        return matrix_to_return;
     }
 
-    Matrix &Matrix::operator*=(const Matrix &matrix_param)
+    Matrix &Matrix::operator*=(Matrix const &matrix_param)
     {
+        /*
+        here we will just use the function we already built to finish the job :)
+        */
         *this = (*this * matrix_param);
         return *this;
     }
 
-    Matrix &Matrix::operator*=(const double scaler)
+    Matrix &Matrix::operator*=(const double number_param)
     {
-        *this = (*this * scaler);
+        /*
+         here we will just use the function we already built to finish the job :)
+        */
+        *this = (*this * number_param);
         return *this;
     }
 
-    double Matrix::sum_this_matrix() const
+    double Matrix::get_values_sum() const
     {
+        /*
+        here we just for loop all the values and sum up
+        to the variable sum
+        then we return it
+        */
         double sum = 0;
-        for (int i = 0; i < this->row; i++)
+        for (size_t i = 0; i < this->rows; i++)
         {
-            for (int j = 0; j < this->column; j++)
+            for (size_t j = 0; j < this->columns; j++)
             {
-                sum += vec[(unsigned int)(i * (this->column) + j)];
+                sum += vec_of_mat[(i * (this->columns) + j)];
             }
         }
         return sum;
     }
-    bool Matrix::operator>(const Matrix &matrix)
+
+    bool Matrix::operator>(Matrix const &matrix_param)
     {
-        return (*this).sum_this_matrix() > matrix.sum_this_matrix();
+        /*
+        first we chack that we can make the comparision
+        */
+        compare_size(matrix_param);
+        /*
+        now we can use the comparison on the values that we sum :) using the function we wrote above
+        */
+        return (*this).get_values_sum() > matrix_param.get_values_sum();
     }
-    bool Matrix::operator<(const Matrix &matrix)
+
+    bool Matrix::operator<(Matrix const &matrix_param)
     {
-        return (*this).sum_this_matrix() < matrix.sum_this_matrix();
+        /*
+       first we chack that we can make the comparision
+       */
+        compare_size(matrix_param);
+        /*
+         now we can use the comparison on the values that we sum :) using the function we wrote above
+        */
+        return (*this).get_values_sum() < matrix_param.get_values_sum();
     }
-    bool Matrix::operator!=(const Matrix &matrix_param)
+
+    bool Matrix::operator!=(Matrix const &matrix_param)
     {
-        if (this->row != matrix_param.row)
+        /*
+        first we chack that we can make the comparision
+        */
+        compare_size(matrix_param);
+        /*
+        lets just loop over the values and if a value is diffrent we can call it not equal
+        */
+        size_t size = (this->rows * this->columns);
+        for (size_t i = 0; i < size; i++)
         {
-            throw runtime_error("diffrent size ");
+            if (this->vec_of_mat[i] != matrix_param.vec_of_mat[i])
+            {
+                return true;
+            }
         }
-        if (this->column != matrix_param.column)
+        return false;
+    }
+
+    bool Matrix::operator==(Matrix const &matrix_param)
+    {
+        /*
+        first we chack that we can make the comparision
+        */
+        compare_size(matrix_param);
+        /*
+        now we can use the comparison on the values that we sum :) using the function we wrote above
+        */
+        return !((*this) != matrix_param);
+    }
+
+    bool Matrix::operator<=(Matrix const &matrix_param)
+    {
+
+        /*
+        first we chack that we can make the comparision
+        */
+        compare_size(matrix_param);
+        /*
+       now we can use the comparison on the values that we sum :) using the function we wrote above
+       */
+        return (*this).get_values_sum() <= matrix_param.get_values_sum();
+    }
+
+    Matrix Matrix::operator--(const int number_param)
+    {
+        /*
+        we will use the fucntion that we alerady built  and return the matrix with the finished values
+        */
+        Matrix matrix_to_return = *this;
+        this->operator--();
+        return matrix_to_return;
+    }
+
+    ostream &operator<<(ostream &COUT, Matrix const &matrix_param1)
+    {
+        /*
+            we need to make this code work as specified from the demo
+
+          Matrix a{identity, 3, 3};  // constructor taking a vector and a matrix size
+          cout << a << endl;
+
+           prints   [1 0 0]
+                    [0 1 0]
+                    [0 0 1]
+        */
+
+        // because of the test i had to add this for loop to print the last row accoring to the
+        // rulse of the tests so i just changed the format because the last row i added a endl in the end
+        size_t outer_index = 0;
+        for (size_t i = 0; i < matrix_param1.rows - 1; i++)
         {
-            throw runtime_error("diffrent size ");
-        }
-        return !(((*this) == matrix_param));
-    }
-
-    bool Matrix::operator==(const Matrix &matrix)
-    {
-        // std::cout << "line 226" << std::endl;
-        return !((*this) != matrix);
-    }
-
-    bool Matrix::operator>=(const Matrix &matrix)
-    {
-        return ((*this) > matrix) || ((*this) == matrix);
-    }
-    bool Matrix::operator<=(const Matrix &matrix)
-    {
-        return ((*this) < matrix) || ((*this) == matrix);
-    }
-
-    std::ostream &operator<<(std::ostream &COUT, const Matrix &matrix)
-    {
-        int minus_1 = 1;
-        for (int i = 0; i < matrix.row; i++)
-        {
+            // first thing we need to print open bracket [
             COUT << '[';
-            for (int j = 0; j < matrix.column; j++)
+            for (size_t j = 0; j < matrix_param1.columns - 1; j++)
             {
-                COUT << matrix.vec[(unsigned int)(matrix.column * i + j)];
-                if (j < matrix.column - minus_1)
-                {
-                    COUT << ' ';
-                }
+                // first thing we need to print open bracket [
+                COUT << matrix_param1.vec_of_mat[outer_index++] << " ";
             }
-            if (i < matrix.row - minus_1)
-            {
-                COUT << "]" << std::endl;
-            }
-            else
-            {
-                COUT << "]";
-            }
+            COUT << matrix_param1.vec_of_mat[outer_index++] << "]" << '\n';
         }
+        COUT << '[';
+        for (size_t j = 0; j < matrix_param1.columns - 1; j++)
+        {
+            // now we need to add a space every value
+            COUT << matrix_param1.vec_of_mat[outer_index++] << " ";
+        }
+        // end of every row we print closing bracket ]
+        COUT << matrix_param1.vec_of_mat[outer_index++] << "]";
+
         return COUT;
     }
 
-    Matrix operator*(const double number, Matrix &matrix)
+    std::string make_string(std::istream &ISTREAM)
     {
-        return matrix * number;
-    }
-    Matrix operator-(Matrix &matrix)
-    {
-        return matrix *= -1;
-    }
-    Matrix Matrix::operator-(const double number)
-    {
-        return *this;
-    };
-    Matrix Matrix::operator-(const int number)
-    {
-        return *this;
-    };
-    Matrix Matrix::operator+(const double number)
-    {
-        return *this;
-    };
-    Matrix Matrix::operator+(const int number)
-    {
-        return *this;
-    };
-
-    bool operator==(const Matrix &matrix1, const Matrix &matrix2)
-    {
-        if (matrix1.row != matrix2.row || matrix1.column != matrix2.column)
+        /*
+            make a string from i stream
+        */
+        char ch = 0;
+        string s;
+        while (ch != '\n')
         {
-            return false;
+            ch = ISTREAM.get();
+            s += ch;
         }
-        std::cout << "line 293" << endl;
-        unsigned int size = (unsigned int)(matrix1.row * matrix1.column);
-        for (unsigned int i = 0; i < size; i++)
+        s.pop_back();
+        return s;
+    }
+
+    std::istream &operator>>(std::istream &isOUT, Matrix &mat)
+    {
+        vector<string> new_vector_to_string = string_to_vector(make_string(isOUT), ',');
+        size_t row_size = new_vector_to_string.size();
+        size_t columns_size = string_to_vector(new_vector_to_string[0], ' ').size();
+        vector<double> new_vector_to_matrix;
+        new_vector_to_matrix.resize(row_size * columns_size);
+        size_t outer_index = 0;
+        for (size_t i = 0; i < new_vector_to_string.size(); i++)
         {
-            if (matrix1.vec[i] != matrix2.vec[i])
+            if (i > 0)
             {
-                return false;
+                if (new_vector_to_string[i].at(0) != ' ')
+                {
+                    throw runtime_error("no space according to the test ");
+                }
+                new_vector_to_string[i].erase(0, 1);
+            }
+            vector<string> row_vector = string_to_vector(new_vector_to_string[i], ' ');
+            if (row_vector.size() != columns_size)
+            {
+                throw runtime_error("rows not same size ");
+            }
+            if (row_vector[0].at(0) != '[' || row_vector[row_vector.size() - 1].at(1) != ']')
+            {
+                throw runtime_error("problem with [ ] ");
+            }
+            row_vector[0].erase(0, 1);
+            new_vector_to_matrix[outer_index++] = stod(row_vector[0]);
+            size_t j = 1;
+            for (; j < row_vector.size() - 1; j++)
+            {
+                new_vector_to_matrix[outer_index++] = stod(row_vector[j]);
+            }
+            string &lastRow = row_vector[j];
+            lastRow.pop_back();
+            new_vector_to_matrix[outer_index++] = stod(lastRow);
+        }
+        mat = Matrix(new_vector_to_matrix, row_size, columns_size);
+        return isOUT;
+    }
+
+    Matrix Matrix::operator++(const int flag)
+    {
+        /*
+        we will use the fucntion that we alerady built  and return the matrix with the finished values
+        */
+        Matrix matrix_to_return = *this;
+        this->operator++();
+        return matrix_to_return;
+    }
+
+    bool Matrix::operator>=(Matrix const &matrix_param)
+    {
+        /*
+        first we check for the good size
+        */
+        compare_size(matrix_param);
+        /*
+        now we will use functions we already build
+        */
+        return (*this).get_values_sum() >= matrix_param.get_values_sum();
+    }
+
+    Matrix operator-(Matrix &matrix_param1)
+    {
+        /*
+        just change the sign of the values by using the * function that we already built
+        */
+        return matrix_param1 * -1;
+    }
+
+    Matrix operator+(Matrix &matrix_param1)
+    {
+        /*
+        no change in the sign of the values
+        */
+        return matrix_param1;
+    }
+
+    bool operator==(Matrix const &matrix_param1, Matrix const &matrix_param)
+    {
+        /*
+        here we will check for equal
+        now we will check first the sizes
+        */
+        if (matrix_param1.rows != matrix_param.rows || matrix_param1.columns != matrix_param.columns)
+        {
+            throw invalid_argument(" not good columns and rows");
+        }
+        /*
+    now we will compare values in the slots
+        */
+        for (size_t i = 0; i < matrix_param1.rows; i++)
+        {
+            for (size_t j = 0; j < matrix_param1.columns; j++)
+            {
+                if (matrix_param1.vec_of_mat[(i * matrix_param1.columns + j)] != matrix_param.vec_of_mat[(i * matrix_param1.columns + j)])
+                {
+                    return false;
+                }
             }
         }
-
         return true;
-    };
-
-    Matrix operator*(const Matrix &matrix1, const Matrix &matrix2)
-    {
-        if (matrix1.row != matrix2.row || matrix1.column != matrix2.column)
-        {
-            throw std::runtime_error("diffrent size");
-        }
-        return matrix1;
     }
 
-    Matrix operator+(Matrix &matrix)
+    void Matrix::compare_size(Matrix const &matrix_param) const
     {
-        return matrix;
+        /*
+        compare size will comapre rows and cols
+        */
+        if (this->rows != matrix_param.rows || this->columns != matrix_param.columns)
+        {
+            throw runtime_error("diffrent size");
+        }
     }
 
-    std::istream &operator>>(std::istream &is, Matrix &self)
+    vector<string> string_to_vector(const string &str, const char c)
     {
-        string element;
-        string matend;
-        int columns = -2;
-        int lines = 0;
-        vector<double> matrix;
-        while (!is.eof())
-        {
-            is >> element;
-            matend += " " + element;
-        }
+        /*
+        helper function
+        that helps us convert a string to vector so it is easy to resize
+        */
+        vector<string> res;
+        res.resize(str.size());
 
-        lines = (int)count(matend.begin(), matend.end(), '[');
-
-        for (unsigned long i = 0; i < matend.size(); i++)
+        size_t realSize = 0;
+        for (size_t i = 0; i < str.size(); i++)
         {
-            if (matend[i] == ' ')
+            if (str.at(i) == c)
             {
-                columns++;
+                ++realSize;
             }
-            if (matend[i] == ']')
+            else
             {
-                break;
+                res[realSize] += str.at(i);
             }
         }
 
-        // matrix_input_exeption(&matend,lines,columns);
-
-        int sum_spaces = lines * (columns + 2);
-        int sum_psiks = lines - 1;
-        if (lines != (int)count(matend.begin(), matend.end(), ']'))
-        {
-            throw std::out_of_range{"not in format"};
-        }
-        int sum_spaces_between = 0;
-        for (unsigned long i = 0; i < matend.size(); i++)
-        {
-            if (matend[i] == ' ')
-            {
-                sum_spaces--;
-                sum_spaces_between++;
-            }
-            if (matend[i] == ',')
-            {
-                sum_psiks--;
-            }
-            if (i != matend.size() - 1 && matend[i] == ']' && matend[i + 1] != ',')
-            {
-                throw std::out_of_range{"not in format"};
-            }
-            if (matend[i] == ']')
-            {
-                if (sum_spaces_between != (columns + 2))
-                {
-                    throw std::out_of_range{"not in format"};
-                }
-                sum_spaces_between = 0;
-            }
-        }
-        if (sum_spaces != 0 || sum_psiks != 0)
-        {
-            throw std::out_of_range{"not in format"};
-        }
-
-        replace(matend.begin(), matend.end(), '[', ' ');
-        replace(matend.begin(), matend.end(), ']', ' ');
-        replace(matend.begin(), matend.end(), ',', ' ');
-
-        string num_in_matrix;
-        stringstream stream_matrix(matend);
-        while (getline(stream_matrix, num_in_matrix, ' '))
-        {
-            if (num_in_matrix != "\0")
-            {
-                try
-                {
-                    double num_double = stod(num_in_matrix);
-                    matrix.push_back(num_double);
-                }
-                catch (exception &ex)
-                {
-                    throw std::out_of_range{"not number"};
-                }
-            }
-        }
-        self.column = columns;
-        self.row = lines;
-        self.vec = matrix;
-        return is;
+        ++realSize;
+        res.resize(realSize);
+        return res;
     }
 
+    Matrix &Matrix::operator++()
+    {
+        /*
+        incease all values by 1
+        by using for loop
+        */
+        for (size_t i = 0; i < this->rows; i++)
+        {
+            for (size_t j = 0; j < columns; j++)
+            {
+                vec_of_mat[(i * columns + j)] += 1;
+            }
+        }
+        return *this;
+    }
+
+    Matrix::Matrix(const vector<double> &vec_to_store_info, const int row_param, const int coloms_param)
+    {
+        /*
+            constructor of the matrix , we set the values after we check validation :)
+        */
+
+        if (row_param <= 0 || coloms_param <= 0)
+        {
+            throw runtime_error(" negative input ");
+        }
+
+        if ((size_t)vec_to_store_info.size() != row_param * coloms_param)
+        {
+            throw runtime_error(" not good size vector");
+        }
+
+        this->vec_of_mat = vec_to_store_info;
+        this->rows = (size_t)row_param;
+        this->columns = (size_t)coloms_param;
+    }
 }

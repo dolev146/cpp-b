@@ -1,7 +1,7 @@
-
-
 #include <iostream>
+#include <sstream>
 #include <vector>
+#include <string>
 #include <stdexcept>
 
 namespace zich
@@ -9,50 +9,49 @@ namespace zich
     class Matrix
     {
     private:
-        std::vector<double> vec;
-        int row;
-        int column;
-        double multiply_matrices(const int, const Matrix &matrix, const int);
-        double sum_this_matrix() const;
+        std::vector<double> vec_of_mat;
+        size_t rows;
+        size_t columns;
+        double matrix_multipy_helper(const size_t, const Matrix &, const size_t);
+        double get_values_sum() const;
 
     public:
-        Matrix(const std::vector<double> &vec, const int row, const int column);
-        Matrix operator+(const Matrix &matrix); // check
-        Matrix operator+(const double);
-        Matrix operator+(const int);
-        Matrix &operator++();                           // check
-        Matrix operator++(const int);                   // check
-        Matrix &operator+=(const Matrix &other_matrix); // check
+        friend std::ostream &operator<<(std::ostream &, const Matrix &);
+        friend std::istream &operator>>(std::istream &, Matrix &);
+        friend Matrix operator*(const double, Matrix &);
+        friend Matrix operator-(Matrix &);
+        friend Matrix operator+(Matrix &);
+        friend bool operator==(const Matrix &, const Matrix &);
 
-        friend std::istream &operator>>(std::istream &is, Matrix &self); // check
+        Matrix &operator-=(const Matrix &);
+        Matrix &operator--();
+        Matrix operator--(const int);
+        Matrix &operator+=(const Matrix &);
 
-        friend std::ostream &operator<<(std::ostream &COUT, const Matrix &matrix); // check
-        friend Matrix operator*(const double, Matrix &matrix);                     // check
-        friend Matrix operator-(Matrix &matrix);                                   // check
-        friend Matrix operator+(Matrix &matrix);                                   // check
-        friend bool operator==(const Matrix &matrix1, const Matrix &matrix2);      // check
-        friend Matrix operator*(const Matrix &matrix1, const Matrix &matrix2);     // check
+        Matrix &operator++();
+        Matrix operator+(const Matrix &);
+        Matrix operator++(const int);
 
-        Matrix operator-(const Matrix &other_matrix); // check
-        Matrix operator-(const double);
-        Matrix operator-(const int);
-        Matrix &operator--();                           // check
-        Matrix operator--(const int);                   // check
-        Matrix &operator-=(const Matrix &other_matrix); // check
+        Matrix operator-(const Matrix &);
+        Matrix operator*(const Matrix &);
+        Matrix operator*(const double);
+        Matrix &operator*=(const Matrix &);
+        Matrix &operator*=(const double);
 
-        bool operator>(const Matrix &matrix);  // check
-        bool operator<(const Matrix &matrix);  // check
-        bool operator!=(const Matrix &matrix); // check
-        bool operator==(const Matrix &matrix); // check
-        bool operator>=(const Matrix &matrix); // check
-        bool operator<=(const Matrix &matrix); // check
+        bool operator>(const Matrix &);
+        bool operator>=(const Matrix &);
+        bool operator<(const Matrix &);
+        bool operator!=(const Matrix &);
+        bool operator==(const Matrix &);
+        bool operator<=(const Matrix &);
 
-        Matrix operator*(const Matrix &matrix);   // check
-        Matrix operator*(const double);           // check
-        Matrix &operator*=(const Matrix &matrix); // check
-        Matrix &operator*=(const double);         // check
+        void compare_size(const Matrix &) const;
 
-        friend std::istream &operator>>(std::istream &is, Matrix &self);
+        Matrix(const std::vector<double> &, const int, const int);
+
+        
     };
 
+    std::vector<std::string> string_to_vector(const std::string &, const char);
+    std::string make_string(std::istream &);
 };
