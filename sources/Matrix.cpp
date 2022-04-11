@@ -144,46 +144,50 @@ namespace zich
         return sum;
     }
 
-    Matrix Matrix::operator*(const Matrix &matrix)
+    Matrix Matrix::operator*(const Matrix &matrix_param)
     {
-        if (this->column != matrix.row)
+        if (this->column != matrix_param.row)
         {
-            throw std::runtime_error("size problem");
+            throw runtime_error("");
         }
         std::vector<double> n;
-        n.resize((unsigned int)(this->row * matrix.column));
-        Matrix newMatrix(n, row, matrix.column);
+        n.resize((unsigned int)(row * matrix_param.column));
+        Matrix newMatrix(n, row, matrix_param.column);
         for (int i = 0; i < newMatrix.row; i++)
         {
             for (int j = 0; j < newMatrix.column; j++)
             {
-                newMatrix.vec[(unsigned int)(i * newMatrix.column + j)] = multiply_matrices(i, matrix, j);
+                newMatrix.vec[(unsigned int)(i * newMatrix.column + j)] = multiply_matrices(i, matrix_param, j);
             }
         }
         return newMatrix;
     }
-    Matrix Matrix::operator*(const double a)
+
+    Matrix Matrix::operator*(const double number)
     {
         Matrix newMatrix = *this;
         for (unsigned int i = 0; i < row; i++)
         {
             for (unsigned int j = 0; j < column; j++)
             {
-                newMatrix.vec[(unsigned int)(column)*i + j] *= a;
+                newMatrix.vec[(unsigned int)(column)*i + j] *= number;
             }
         }
         return newMatrix;
     }
-    Matrix &Matrix::operator*=(const Matrix &matrix)
+
+    Matrix &Matrix::operator*=(const Matrix &matrix_param)
     {
-        *this = (*this * matrix);
+        *this = (*this * matrix_param);
         return *this;
     }
-    Matrix &Matrix::operator*=(const double number)
+
+    Matrix &Matrix::operator*=(const double scaler)
     {
-        *this = (*this * number);
+        *this = (*this * scaler);
         return *this;
     }
+
     double Matrix::sum_this_matrix() const
     {
         double sum = 0;
@@ -216,10 +220,13 @@ namespace zich
         }
         return !(((*this) == matrix_param));
     }
+
     bool Matrix::operator==(const Matrix &matrix)
     {
+        // std::cout << "line 226" << std::endl;
         return !((*this) != matrix);
     }
+
     bool Matrix::operator>=(const Matrix &matrix)
     {
         return ((*this) > matrix) || ((*this) == matrix);
@@ -286,7 +293,7 @@ namespace zich
         {
             return false;
         }
-
+        std::cout << "line 293" << endl;
         unsigned int size = (unsigned int)(matrix1.row * matrix1.column);
         for (unsigned int i = 0; i < size; i++)
         {
