@@ -204,13 +204,17 @@ namespace zich
     {
         return (*this).sum_this_matrix() < matrix.sum_this_matrix();
     }
-    bool Matrix::operator!=(const Matrix &otherMat)
+    bool Matrix::operator!=(const Matrix &matrix_param)
     {
-        if (this->row != otherMat.row || this->column != otherMat.column)
+        if (this->row != matrix_param.row)
         {
-            throw runtime_error("The matrix must been in the same size ! ");
+            throw runtime_error("diffrent size ");
         }
-        return !(((*this) == otherMat));
+        if (this->column != matrix_param.column)
+        {
+            throw runtime_error("diffrent size ");
+        }
+        return !(((*this) == matrix_param));
     }
     bool Matrix::operator==(const Matrix &matrix)
     {
