@@ -7,11 +7,7 @@
 //  * Edited by Dolev Dublon
 //  * @since 2022-02
 //  */
-// #define DOCTEST_CONFIG_IMPLEMENT
-// #include "../doctest.h"
-// using namespace doctest;
 
-// #include <iostream>
 // #include <stdlib.h>
 // #include <string>
 
@@ -30,43 +26,22 @@
 // int main()
 // {
 
-//     TEST_CASE("matrix multiplication")
-//     {
-//         vector<double> identity_3 = {1, 0, 0, 0, 1, 0, 0, 0, 1}; // 3x3
-//         Matrix mat_identity_3(identity_3, 3, 3);
-//         vector<double> vec1 = {1, 1, 1, 1, 1, 1, 1, 1, 1};                            // 3x3
-//         vector<double> arr = {2, 1, 1, 1, 2, 1, 1, 1, 2};                             // 3x3   arr = identity_3 + vec1
-//         vector<double> vec2 = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0};                   // 3x4
-//         vector<double> identity_4 = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1}; // 4x4
-//         vector<double> _vec_ = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};                  // 4x3
-//         Matrix _mat_(_vec_, 4, 3);
-//         Matrix mat1(vec1, 3, 3);
-//         Matrix mat_arr(arr, 3, 3);
-//         Matrix mat2(vec2, 3, 4);
-//         Matrix mat_identity_4(identity_4, 4, 4);
-
-//         CHECK(((mat1 * mat_identity_3) == mat1));
-//         CHECK(((mat_identity_3 * mat1) == mat1));
-//         CHECK(((mat2 * mat_identity_4) == mat2));
-//         CHECK(((mat1 + mat_identity_3) == mat_arr));
-//         CHECK(((mat2 * _mat_) == mat1));
-
-//         for (double i = 1; i < 500; i++)
-//         {
-//             int random = rand() % 1000;
-//             vector<double> vec1 = {i * random, i * random, i * random, i * random, i * random, i * random, i * random, i * random, i * random};
-//             Matrix matrix(vec1, 3, 3);
-//             CHECK(((matrix * mat_identity_3) == matrix));
-
-//             vector<double> arr1 = {i, i, i, i, i, i, i, i, i}; // 3x3
-
-//             vector<double> arr = {pow(i, 2), pow(i, 2), pow(i, 2), pow(i, 2), pow(i, 2), pow(i, 2), pow(i, 2), pow(i, 2), pow(i, 2)}; // 3x3
-//             Matrix mat1(arr1, 3, 3);
-//             Matrix mat(arr, 3, 3);
-//             CHECK(((mat1 * mat1) != mat));
-//             CHECK(((mat_identity_3 * mat_identity_3) == mat_identity_3));
-//         }
-//     }
+//     // istringstream is1{"[1 1 1 1],[1 1 1 1], [1 1 1 1]\n"};
+//     // CHECK_THROWS(is1 >> mat1);
+//     // istringstream is2{"[1 1 1 1], [1 1 1 1] [1 1 1 1],\n"};
+//     // CHECK_THROWS(is2 >> mat1);
+//     // istringstream is3{"[1 11 1]  [1 1 1 1], [1 1 1 1]\n"};
+//     // CHECK_THROWS(is3 >> mat1);
+//     // istringstream is4{",[1 1 1 1], [1 1 1 1], [1 1 1 1]\n"};
+//     // CHECK_THROWS(is4 >> mat1);
+//     // istringstream is5{",,[1 1 1 1] [1 1 1 1] [1 1 1 1]\n"};
+//     // CHECK_THROWS(is5 >> mat1);
+//     // istringstream is6{"[ 1 1 1 1 ], [ 1 1 1 1 , [ 1 1 1 1 ]]\n"};
+//     // CHECK_THROWS(is6 >> mat1);
+// std::vector<double> unit_matrix = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+//     Matrix mat1{unit_matrix, 3, 3};
+//     istringstream is7{"[1 1 1 1], [1 1 1 1], [1 1 1 1]\n"};
+//     is7 >> mat1;
 
 //     return 0;
 // }

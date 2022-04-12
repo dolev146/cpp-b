@@ -129,7 +129,7 @@ namespace zich
     Matrix Matrix::operator*(Matrix const &matrix_param)
     {
         /*
-        we only need to check for column size equals to rows of second mat
+        we only need to check for column size equals to rows of second matrix_param
         due to the rulse of the multiplication
         */
         if (this->columns != matrix_param.rows)
@@ -334,32 +334,48 @@ namespace zich
         string s;
         while (ch != '\n')
         {
+            // https://www.cplusplus.com/reference/istream/istream/get/
             ch = ISTREAM.get();
             s += ch;
         }
+        // https://www.cplusplus.com/reference/string/string/pop_back/ to remove the null pointer '\0'
         s.pop_back();
         return s;
     }
 
-    std::istream &operator>>(std::istream &isOUT, Matrix &mat)
+    std::istream &operator>>(std::istream &INPUTSTREAM, Matrix &matrix_param)
     {
-        vector<string> new_vector_to_string = string_to_vector(make_string(isOUT), ',');
-        size_t row_size = new_vector_to_string.size();
-        size_t columns_size = string_to_vector(new_vector_to_string[0], ' ').size();
+        /*
+        [1 1 1 1], [1 1 1 1], [1 1 1 1]\n
+        this is a good input
+        we need to validate the input in the correct form
+        and then insert it to the matrix , pars it like json style
+        check the size of the rows
+        and cols
+        */
+
+        vector<string> new_vector_of_string = string_to_vector(make_string(INPUTSTREAM), ',');
+        size_t row_size = new_vector_of_string.size();
+        size_t columns_size = string_to_vector(new_vector_of_string[0], ' ').size();
+        // cout << "col size: " << columns_size << " " << endl;
+        // cout << "row size: " << row_size << " " << endl;
         vector<double> new_vector_to_matrix;
         new_vector_to_matrix.resize(row_size * columns_size);
         size_t outer_index = 0;
-        for (size_t i = 0; i < new_vector_to_string.size(); i++)
+        for (size_t i = 0; i < new_vector_of_string.size(); i++)
         {
             if (i > 0)
             {
-                if (new_vector_to_string[i].at(0) != ' ')
+                if (new_vector_of_string[i].at(0) != ' ')
                 {
-                    throw runtime_error("no space according to the test ");
+                    throw runtime_error("no space according to the test at the begining ");
                 }
-                new_vector_to_string[i].erase(0, 1);
+                // we delete the [ at the begining of the row
+                new_vector_of_string[i].erase(0, 1);
             }
-            vector<string> row_vector = string_to_vector(new_vector_to_string[i], ' ');
+
+            vector<string> row_vector = string_to_vector(new_vector_of_string[i], ' ');
+            // loop over the row and extract values
             if (row_vector.size() != columns_size)
             {
                 throw runtime_error("rows not same size ");
@@ -368,19 +384,30 @@ namespace zich
             {
                 throw runtime_error("problem with [ ] ");
             }
+            // here we delete the last [
             row_vector[0].erase(0, 1);
+            // https://www.cplusplus.com/reference/string/stod/
+            // Parses str interpreting its content as a floating-point number,
+            // which is returned as a value of type double
             new_vector_to_matrix[outer_index++] = stod(row_vector[0]);
             size_t j = 1;
             for (; j < row_vector.size() - 1; j++)
             {
                 new_vector_to_matrix[outer_index++] = stod(row_vector[j]);
             }
-            string &lastRow = row_vector[j];
-            lastRow.pop_back();
-            new_vector_to_matrix[outer_index++] = stod(lastRow);
+            // giving uniqe treatment to the last row because of the ]
+            string &the_last_row = row_vector[j];
+            // cout << "last item 1: " << the_last_row.back() << endl;
+            // cout << "last item 2 : " << the_last_row[the_last_row.size() - 2] << endl;
+            // cout << "the_last_row " << the_last_row << endl;
+            // remove last element = closing bracket ]
+            the_last_row.pop_back();
+            // cout << "the_last_row 2: " << the_last_row << endl;
+            new_vector_to_matrix[outer_index++] = stod(the_last_row);
         }
-        mat = Matrix(new_vector_to_matrix, row_size, columns_size);
-        return isOUT;
+        // construct the matrix and returning the INPUTSTREAM
+        matrix_param = Matrix(new_vector_to_matrix, row_size, columns_size);
+        return INPUTSTREAM;
     }
 
     Matrix Matrix::operator++(const int flag)
@@ -432,7 +459,7 @@ namespace zich
             throw invalid_argument(" not good columns and rows");
         }
         /*
-    now we will compare values in the slots
+            now we will compare values in the slots
         */
         for (size_t i = 0; i < matrix_param1.rows; i++)
         {
@@ -465,23 +492,26 @@ namespace zich
         that helps us convert a string to vector so it is easy to resize
         */
         vector<string> res;
+        // init the size
         res.resize(str.size());
 
-        size_t realSize = 0;
+        size_t counter_char_amount = 0;
         for (size_t i = 0; i < str.size(); i++)
         {
             if (str.at(i) == c)
             {
-                ++realSize;
+                // here we will remove the ','
+                ++counter_char_amount;
             }
             else
             {
-                res[realSize] += str.at(i);
+                // here we insert chars that diffrent from ','
+                res[counter_char_amount] += str.at(i);
             }
         }
 
-        ++realSize;
-        res.resize(realSize);
+        ++counter_char_amount;
+        res.resize(counter_char_amount);
         return res;
     }
 
