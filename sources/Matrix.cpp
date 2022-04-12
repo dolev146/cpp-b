@@ -346,6 +346,7 @@ namespace zich
     std::istream &operator>>(std::istream &INPUTSTREAM, Matrix &matrix_param)
     {
         /*
+        https://www.tutorialspoint.com/cplusplus/input_output_operators_overloading.htm
         [1 1 1 1], [1 1 1 1], [1 1 1 1]\n
         this is a good input
         we need to validate the input in the correct form
